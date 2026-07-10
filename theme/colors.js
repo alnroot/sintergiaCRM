@@ -1,6 +1,4 @@
 const {
-  blue,
-  blueDark,
   green,
   greenDark,
   yellow,
@@ -14,19 +12,20 @@ const {
 } = require('@radix-ui/colors');
 
 export const colors = {
+  // Sintergia brand scale (sage green) — generated from the primary #8FBC8F.
   woot: {
-    25: blue.blue2,
-    50: blue.blue3,
-    75: blue.blue4,
-    100: blue.blue5,
-    200: blue.blue7,
-    300: blue.blue8,
-    400: blueDark.blue11,
-    500: blueDark.blue10,
-    600: blueDark.blue9,
-    700: blueDark.blue8,
-    800: blueDark.blue6,
-    900: blueDark.blue2,
+    25: '#F3F8F3',
+    50: '#EAF2EA',
+    75: '#DFEBDF',
+    100: '#D2E3D2',
+    200: '#BBD6BB',
+    300: '#A6C9A6',
+    400: '#98C098',
+    500: '#8FBC8F',
+    600: '#74A074',
+    700: '#5C835C',
+    800: '#466646',
+    900: '#2E422E',
   },
   green: {
     50: greenDark.green12,
@@ -226,7 +225,7 @@ export const colors = {
     },
 
     black: '#000000',
-    brand: '#2781F6',
+    brand: '#8FBC8F',
     portal: 'var(--dynamic-portal-color)',
     'portal-soft': 'var(--dynamic-portal-color-soft)',
     'portal-faint': 'var(--dynamic-portal-color-faint)',
