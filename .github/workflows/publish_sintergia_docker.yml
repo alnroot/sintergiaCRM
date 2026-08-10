@@ -1,15 +1,20 @@
 #
-# Builds the Sintergia image and pushes it to Docker Hub.
+# Builds the Sintergia image and pushes it to GitHub Container Registry.
 #
 # Runs on GitHub's runners rather than locally, because the Vite asset build
-# needs a 4GB Node heap (see NODE_OPTIONS in docker/Dockerfile).
+# needs a 4GB Node heap (see NODE_OPTIONS in docker/Dockerfile) and has
+# OOM-killed the dev machine.
 #
-# Required repository secrets:
-#   DOCKERHUB_USERNAME - your Docker Hub username
-#   DOCKERHUB_TOKEN    - a Docker Hub access token (NOT your password)
+# No secrets to configure: GHCR authenticates with the built-in GITHUB_TOKEN,
+# which is why this targets GHCR rather than Docker Hub. GHCR also allows
+# unlimited private images, where the Docker Hub free tier allows one.
 #
-# Create the Docker Hub repository as PRIVATE before the first run;
-# repositories default to public when created by a push.
+# The package inherits the repository's visibility on first publish, so it
+# starts private while sintergiaCRM is private.
+#
+# To pull on a server:
+#   docker login ghcr.io -u <github-username> -p <token with read:packages>
+#   docker pull ghcr.io/alnroot/sintergia:latest
 #
 
 name: Publish Sintergia docker image
@@ -23,10 +28,11 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_REPO: alnroot/sintergia
+  DOCKER_REPO: ghcr.io/alnroot/sintergia
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   build:
@@ -55,11 +61,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
