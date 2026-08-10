@@ -29,12 +29,12 @@ const chatSortFilter = useMapGetter('getChatSortFilter');
 const [showActionsDropdown, toggleDropdown] = useToggle();
 
 const currentStatusFilter = computed(() => {
-  return chatStatusFilter.value || wootConstants.STATUS_TYPE.OPEN;
+  return chatStatusFilter.value || wootConstants.STATUS_TYPE.ALL;
 });
 
 const currentSortBy = computed(() => {
   return (
-    chatSortFilter.value || wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC
+    chatSortFilter.value || wootConstants.SORT_BY_TYPE.STATUS_ACTIVITY_ASC
   );
 });
 
@@ -62,6 +62,16 @@ const chatStatusOptions = computed(() => [
 ]);
 
 const chatSortOptions = computed(() => [
+  // Listed first because it is the default: it is what makes the "All" status
+  // filter readable, by keeping open/pending above resolved.
+  {
+    label: t('CHAT_LIST.SORT_ORDER_ITEMS.status_activity_asc.TEXT'),
+    value: 'status_activity_asc',
+  },
+  {
+    label: t('CHAT_LIST.SORT_ORDER_ITEMS.status_activity_desc.TEXT'),
+    value: 'status_activity_desc',
+  },
   {
     label: t('CHAT_LIST.SORT_ORDER_ITEMS.last_activity_at_asc.TEXT'),
     value: 'last_activity_at_asc',

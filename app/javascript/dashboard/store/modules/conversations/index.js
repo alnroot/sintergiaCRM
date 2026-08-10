@@ -12,8 +12,12 @@ const state = {
   allConversations: [],
   attachments: {},
   listLoadingStatus: true,
-  chatStatusFilter: wootConstants.STATUS_TYPE.OPEN,
-  chatSortFilter: wootConstants.SORT_BY_TYPE.LATEST,
+  // Open the list on every conversation, ordered so the ones needing attention
+  // come first. Sorting by activity alone would float resolved chats to the top.
+  chatStatusFilter: wootConstants.STATUS_TYPE.ALL,
+  // Was SORT_BY_TYPE.LATEST, which is not a key on SORT_BY_TYPE and so
+  // evaluated to undefined; the fallbacks downstream hid it.
+  chatSortFilter: wootConstants.SORT_BY_TYPE.STATUS_ACTIVITY_ASC,
   currentInbox: null,
   selectedChatId: null,
   appliedFilters: [],

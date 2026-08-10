@@ -53,6 +53,12 @@
       }
     },
     "SORT_ORDER_ITEMS": {
+      "status_activity_asc": {
+        "TEXT": "Status: Active first"
+      },
+      "status_activity_desc": {
+        "TEXT": "Status: Resolved first"
+      },
       "last_activity_at_asc": {
         "TEXT": "Last activity: Oldest first"
       },
