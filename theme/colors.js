@@ -14,18 +14,22 @@ const {
 export const colors = {
   // Sintergia brand scale (sage green) — generated from the primary #8FBC8F.
   woot: {
+    // 25-400 are surfaces and accents, read with dark text.
+    // 500 and up are solids that carry white label text: 500 is 5.26:1 on
+    // white, so primary buttons pass WCAG AA. The old 500 (#8FBC8F, now 400)
+    // was 2.15:1 and unreadable with a white label.
     25: '#F3F8F3',
     50: '#EAF2EA',
     75: '#DFEBDF',
     100: '#D2E3D2',
     200: '#BBD6BB',
     300: '#A6C9A6',
-    400: '#98C098',
-    500: '#8FBC8F',
-    600: '#74A074',
-    700: '#5C835C',
-    800: '#466646',
-    900: '#2E422E',
+    400: '#8FBC8F',
+    500: '#4F754F',
+    600: '#446644',
+    700: '#395739',
+    800: '#2E472E',
+    900: '#233623',
   },
   green: {
     50: greenDark.green12,

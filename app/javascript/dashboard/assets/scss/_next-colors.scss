@@ -38,10 +38,13 @@
     --blue-6: 187 217 187;
     --blue-7: 166 202 166;
     --blue-8: 160 200 160;
-    --blue-9: 143 188 143;
-    --blue-10: 124 168 124;
-    --blue-11: 74 104 74;
-    --blue-12: 30 49 30;
+    // Steps 9/10 are solid backgrounds and 11/12 are text. Darkened so white
+    // labels on a solid pass WCAG AA (9 is 5.26:1 on white; the old 143 188 143
+    // was 2.15:1). Steps 1-8 keep the light sage surfaces unchanged.
+    --blue-9: 79 117 79;
+    --blue-10: 68 102 68;
+    --blue-11: 57 87 57;
+    --blue-12: 35 54 35;
 
     --ruby-1: 255 252 253;
     --ruby-2: 255 247 248;
