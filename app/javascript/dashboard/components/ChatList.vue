@@ -73,8 +73,11 @@ const store = useStore();
 const resolveAttributesModalRef = ref(null);
 
 const activeAssigneeTab = ref(wootConstants.ASSIGNEE_TYPE.ME);
-const activeStatus = ref(wootConstants.STATUS_TYPE.OPEN);
-const activeSortBy = ref(wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC);
+// Initial values, used until setFiltersFromUISettings runs. Kept in step with
+// that function and with the store defaults; three copies of this pair exist
+// and a mismatch shows up as the list flashing one filter then switching.
+const activeStatus = ref(wootConstants.STATUS_TYPE.ALL);
+const activeSortBy = ref(wootConstants.SORT_BY_TYPE.STATUS_ACTIVITY_ASC);
 const showAdvancedFilters = ref(false);
 // chatsOnView is to store the chats that are currently visible on the screen,
 // which mirrors the conversationList.
@@ -362,12 +365,15 @@ const uniqueInboxes = computed(() => {
 function setFiltersFromUISettings() {
   const { conversations_filter_by: filterBy = {} } = uiSettings.value;
   const { status, order_by: orderBy } = filterBy;
-  activeStatus.value = status || wootConstants.STATUS_TYPE.OPEN;
+  // These fallbacks apply to anyone who has never touched the filter, so they
+  // must match the store defaults in store/modules/conversations/index.js —
+  // otherwise the list opens on one filter and the dropdown claims another.
+  activeStatus.value = status || wootConstants.STATUS_TYPE.ALL;
   activeSortBy.value = Object.values(wootConstants.SORT_BY_TYPE).includes(
     orderBy
   )
     ? orderBy
-    : wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC;
+    : wootConstants.SORT_BY_TYPE.STATUS_ACTIVITY_ASC;
 }
 
 function emitConversationLoaded() {
