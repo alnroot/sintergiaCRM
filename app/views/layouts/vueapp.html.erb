@@ -23,9 +23,20 @@
       <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
       <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
       <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
-      <link class="favicon" rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-      <link class="favicon" rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-      <link class="favicon" rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+      <%#
+        Favicons are served with max-age=31556952, so replacing the file alone
+        leaves everyone who has already loaded the app on the old icon for a
+        year. Bump FAVICON_VERSION whenever the icons change: the URL changes,
+        the cache entry no longer matches, and existing users pick it up on
+        their next load without clearing anything.
+
+        faviconHelper.js rebuilds these hrefs when it swaps the unread badge in
+        and out, so it carries this query string across. Keep the two in sync.
+      %>
+      <% favicon_version = 2 %>
+      <link class="favicon" rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=<%= favicon_version %>">
+      <link class="favicon" rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=<%= favicon_version %>">
+      <link class="favicon" rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=<%= favicon_version %>">
       <link rel="manifest" href="/manifest.json">
     <% end %>
     <link rel="icon" type="image/png" sizes="512x512" href="<%= @global_config['LOGO_THUMBNAIL'] %>">
