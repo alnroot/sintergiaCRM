@@ -12,6 +12,11 @@
 # The package inherits the repository's visibility on first publish, so it
 # starts private while sintergiaCRM is private.
 #
+# Branch model:
+#   develop     -> :<short-sha>            (build check; does NOT move :latest)
+#   produccion  -> :<short-sha> + :latest  (what the VPS deploys)
+#   v* tag      -> :<short-sha> + :v1.2.3
+#
 # To pull on a server:
 #   docker login ghcr.io -u <github-username> -p <token with read:packages>
 #   docker pull ghcr.io/alnroot/sintergia:latest
@@ -22,6 +27,10 @@ name: Publish Sintergia docker image
 on:
   push:
     branches:
+      # produccion is the release branch: only it moves :latest.
+      - produccion
+      # develop builds too, so a broken build shows up now rather than at
+      # release time -- this build takes ~43 minutes.
       - develop
     tags:
       - v*
@@ -53,10 +62,23 @@ jobs:
         run: |
           echo -en '\nENV CW_EDITION="ce"' >> docker/Dockerfile
 
+      # Every build gets an immutable :<short-sha> -- that is what actually gets
+      # deployed and what a rollback names.
+      #
+      # :latest only ever tracks `produccion`. A develop build must never move
+      # it, or "deploy latest" would ship whatever was last pushed to develop.
       - name: Set Docker tags
         run: |
           SHORT_SHA=$(git rev-parse --short HEAD)
-          echo "TAGS=${DOCKER_REPO}:latest,${DOCKER_REPO}:${SHORT_SHA}" >> $GITHUB_ENV
+          TAGS="${DOCKER_REPO}:${SHORT_SHA}"
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            TAGS="${TAGS},${DOCKER_REPO}:${GITHUB_REF#refs/tags/}"
+          fi
+          if [[ "${GITHUB_REF}" == "refs/heads/produccion" ]]; then
+            TAGS="${TAGS},${DOCKER_REPO}:latest"
+          fi
+          echo "TAGS=${TAGS}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${SHORT_SHA}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -76,8 +98,22 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ env.TAGS }}
+          # deploy_sintergia.sh reads image.version to turn a pull of :latest
+          # into the immutable tag it actually pins in .env. Without these
+          # labels it cannot resolve :latest and refuses to deploy.
+          labels: |
+            org.opencontainers.image.version=${{ env.IMAGE_TAG }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/alnroot/sintergiaCRM
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # Inspect the sha tag, not :latest -- :latest does not exist on tag builds.
       - name: Inspect pushed image
-        run: docker buildx imagetools inspect ${{ env.DOCKER_REPO }}:latest
+        run: docker buildx imagetools inspect ${{ env.DOCKER_REPO }}:${{ env.IMAGE_TAG }}
+
+      - name: Summary
+        run: |
+          echo "Pushed: \`${TAGS}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Deploy with: **Deploy Sintergia to VPS** -> tag \`${IMAGE_TAG}\`" >> $GITHUB_STEP_SUMMARY
